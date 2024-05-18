@@ -2,6 +2,7 @@
 
 - https://www.youtube.com/watch?v=WikQ5n1QXQs
 - https://www.youtube.com/watch?v=2Mhqwt2xTxk
+- https://www.youtube.com/watch?v=icEx1Q_U7J0
 - https://www.circuitstate.com/tutorials/what-is-can-bus-how-to-use-can-interface-with-esp32-and-arduino/#Signaling
 - https://netmodule-linux.readthedocs.io/en/latest/howto/can.html
 
@@ -13,15 +14,19 @@
 
 ### CAN Topology
 
+<img src="https://raw.githubusercontent.com/DNadas98/can_protocol/main/img/01_can_topology.png" style=" width: 100%; height: auto; max-width: 800px;"/>
+
 - https://youtu.be/WikQ5n1QXQs?feature=shared&t=63
 - Shared BUS topology: distributed can nodes, no master/slave devices
 - Two-wire differential BUS: twisted pair to avoid EMI
   - differential BUS: two wires carry the same information at the same time but in opposite polarities
   - EMI: electromagnetic interference
 - Terminated by 120 Ohm resistors
-  - Reduces signal reflections
+  - Reduces signal reflections  
 
 ### CAN Message Arbitration
+
+<img src="https://raw.githubusercontent.com/DNadas98/can_protocol/main/img/02_can_message_arbitration.png" style=" width: 100%; height: auto; max-width: 800px;"/>
 
 - https://youtu.be/WikQ5n1QXQs?feature=shared&t=180
 - CAN Nodes have IDs
@@ -31,6 +36,8 @@
   - node reads back its own ID from the bus => successful transmission
 
 ### CAN Voltage Levels
+
+<img src="https://raw.githubusercontent.com/DNadas98/can_protocol/main/img/03_can_signal_PHY.png" style=" width: 100%; height: auto; max-width: 800px;"/>
 
 - https://youtu.be/WikQ5n1QXQs?feature=shared&t=330
 - https://www.circuitstate.com/tutorials/what-is-can-bus-how-to-use-can-interface-with-esp32-and-arduino/#Signaling
@@ -51,6 +58,8 @@
 
 ### CAN Signal
 
+<img src="https://raw.githubusercontent.com/DNadas98/can_protocol/main/img/04_can_signal_Data_Link.png" style=" width: 100%; height: auto; max-width: 800px;"/>
+
 - https://youtu.be/WikQ5n1QXQs?feature=shared&t=440
 - OSI 2. data link layer
 - 64 bits of data in a transmission
@@ -69,6 +78,8 @@
   - idle time between frames
 
 ### ECU: Electronic Control Unit
+
+<img src="https://raw.githubusercontent.com/DNadas98/can_protocol/main/img/05_can_ECU.png" style=" width: 100%; height: auto; max-width: 800px;"/>
 
 - https://youtu.be/WikQ5n1QXQs?feature=shared&t=615
 - CAN node: microcontroller with CAN controller
