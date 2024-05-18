@@ -22,7 +22,7 @@
   - differential BUS: two wires carry the same information at the same time but in opposite polarities
   - EMI: electromagnetic interference
 - Terminated by 120 Ohm resistors
-  - Reduces signal reflections  
+  - Reduces signal reflections
 
 ### CAN Message Arbitration
 
@@ -100,8 +100,9 @@
   ```
 - Create VCAN interface
   ```bash
-  sudo ip link add dev vcan0 type vcan
-  sudo ip link set up vcan0
+  sudo ip link add dev vcan0 type vcan && \
+  sudo ip link set up vcan0 && \
+  sudo ip link ls | grep vcan0
   ```
 
 - Install CAN Utils
@@ -109,4 +110,14 @@
   sudo apt-get update && \
   sudo apt-get install can-utils -y
   ```
-  
+
+- Test VCAN interface: open two terminals
+  ```bash
+  # 1.
+  candump vcan0
+  ```
+  ```bash
+  # 2. Send "hello" "world"
+  cansend vcan0 123#68656C6C6F
+  cansend vcan0 123#776F726C64
+  ```
