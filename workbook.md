@@ -111,13 +111,17 @@
   sudo apt-get install can-utils -y
   ```
 
-- Test VCAN interface: open two terminals
+- Test VCAN interface: open a terminal for sending and another for receiving
+  - Listen to vcan0 and log to `.log` file
   ```bash
-  # 1.
-  candump vcan0
+  candump vcan0 -l
   ```
+  - Send "hello" "world" to vcan0
   ```bash
-  # 2. Send "hello" "world"
   cansend vcan0 123#68656C6C6F
   cansend vcan0 123#776F726C64
+  ```
+  - Play back the log file
+  ```bash
+  cat *.log | canplayer
   ```
