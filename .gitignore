@@ -4,7 +4,10 @@
 *.env*
 
 cmake-*
+
 *.log
+candump*
+canplayer*
 
 *.gz
 *.zip
