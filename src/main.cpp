@@ -35,8 +35,8 @@ int main() {
       std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 
-//    userInputThread.join();
-//    return 0;
+    userInputThread.join();
+    return 0;
   } catch (const std::exception &e) {
     std::cerr << "Error: " << e.what() << std::endl;
     return -1;
@@ -71,7 +71,13 @@ void readUserInput(CANService &canService) {
     std::cout << "Press 'h' to send a CAN message in hex, 't' to send one in plain text or 'q' to exit." << std::endl;
     try {
       std::string input;
-      std::getline(std::cin, input);
+      if (!std::getline(std::cin, input)) {
+        if (std::cin.eof()) {
+          exit(0);
+        } else {
+          throw std::runtime_error("Invalid input.");
+        }
+      }
 
       if (input == "h" || input == "H") {
         handleHexInput(canService);
@@ -80,7 +86,7 @@ void readUserInput(CANService &canService) {
       } else if (input == "q" || input == "Q") {
         exit(0);
       } else {
-        std::cout << "Invalid input." << std::endl;
+        throw std::runtime_error("Invalid input.");
       }
     } catch (const std::exception &e) {
       std::cerr << "Error: " << e.what() << std::endl;
@@ -95,7 +101,14 @@ void handleHexInput(CANService &canService) {
 
   std::cout << "Enter message (HEX, space-separated): ";
   std::string hexMessage;
-  std::getline(std::cin, hexMessage);
+  if (!std::getline(std::cin, hexMessage)) {
+    if (std::cin.eof()) {
+      exit(0);
+    } else {
+      std::cerr << "Error reading message." << std::endl;
+      return;
+    }
+  }
 
   // 2 hex chars / byte, 1 space between bytes
   if (hexMessage.size() > CAN_MAX_DLEN * 2 + CAN_MAX_DLEN - 1) {
@@ -112,7 +125,14 @@ void handleTextInput(CANService &canService) {
 
   std::cout << "Enter message (plain text, max 8 characters): ";
   std::string message;
-  std::getline(std::cin, message);
+  if (!std::getline(std::cin, message)) {
+    if (std::cin.eof()) {
+      exit(0);
+    } else {
+      std::cerr << "Error reading message." << std::endl;
+      return;
+    }
+  }
 
   if (message.size() > CAN_MAX_DLEN) {
     throw std::runtime_error("Message too long.");
@@ -125,10 +145,20 @@ void handleTextInput(CANService &canService) {
 }
 
 uint32_t readCanId() {
-  std::cout << "Enter CAN ID (HEX): ";
-  uint32_t id;
-  std::cin >> std::hex >> id;
-  std::cin.clear();
-  std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-  return id;
+  while (true) {
+    std::cout << "Enter CAN ID (HEX): ";
+    uint32_t id;
+    if (!(std::cin >> std::hex >> id)) {
+      if (std::cin.eof()) {
+        exit(0);
+      } else {
+        std::cin.clear(); // clear the error flag
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // discard invalid input
+        std::cerr << "Invalid CAN ID. Please enter a valid hexadecimal value." << std::endl;
+      }
+    } else {
+      std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // discard any extra input
+      return id;
+    }
+  }
 }
