@@ -39,6 +39,8 @@ private:
 
     void createSocket();
 
+    void closeSocket();
+
     void setupInterface(const std::string &interface);
 
     void bindSocket();

@@ -18,14 +18,14 @@ void handleTextInput(CANService &canService);
 
 uint32_t readCanId();
 
-void initializeCanInterface(CANService &canService);
+void setupCanInterface(CANService &canService, const std::string &prompt);
 
 void startCanReader(CANService &canService);
 
 int main() {
   try {
     CANService canService;
-    initializeCanInterface(canService);
+    setupCanInterface(canService, "Enter CAN interface name, or 'q' to quit: ");
 
     std::thread userInputThread(readUserInput, std::ref(canService));
     startCanReader(canService);
@@ -38,11 +38,11 @@ int main() {
   }
 }
 
-void initializeCanInterface(CANService &canService) {
+void setupCanInterface(CANService &canService, const std::string &prompt) {
   std::string interfaceName;
 
   while (true) {
-    std::cout << "Enter CAN interface name, or 'q' to quit: ";
+    std::cout << prompt;
     if (!std::getline(std::cin, interfaceName) || interfaceName == "q" || interfaceName == "Q") {
       exit(0);
     }
@@ -94,7 +94,7 @@ void printFrame(const struct can_frame &frame) {
 
 void readUserInput(CANService &canService) {
   while (true) {
-    std::cout << "Press 'h' to send a CAN message in hex, 't' to send one in plain text or 'q' to exit." << std::endl;
+    std::cout << "Press 'h' to send a CAN message in hex, 't' to send one in plain text, 'i' to switch interfaces, or 'q' to exit." << std::endl;
     try {
       std::string input;
       if (!std::getline(std::cin, input)) {
@@ -109,6 +109,8 @@ void readUserInput(CANService &canService) {
         handleHexInput(canService);
       } else if (input == "t" || input == "T") {
         handleTextInput(canService);
+      } else if (input == "i" || input == "I") {
+        setupCanInterface(canService, "Enter new CAN interface name, or 'q' to quit: ");
       } else if (input == "q" || input == "Q") {
         exit(0);
       } else {

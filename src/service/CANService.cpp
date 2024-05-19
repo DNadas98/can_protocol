@@ -18,6 +18,7 @@ CANService::~CANService() {
 }
 
 void CANService::initialize(const std::string &interface) {
+  closeSocket();
   createSocket();
   setupInterface(interface);
   bindSocket();
@@ -82,4 +83,11 @@ struct can_frame CANService::createFrame(uint32_t id, const std::string &data) {
   }
   frame.can_dlc = byteIndex;
   return frame;
+}
+
+void CANService::closeSocket() {
+  if (sockfd >= 0) {
+    close(sockfd);
+    sockfd = -1;
+  }
 }
