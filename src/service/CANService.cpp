@@ -12,9 +12,7 @@ CANService::CANService() : sockfd(-1) {
 }
 
 CANService::~CANService() {
-  if (sockfd >= 0) {
-    close(sockfd);
-  }
+  closeSocket();
 }
 
 void CANService::initialize(const std::string &interface) {
