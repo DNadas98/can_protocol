@@ -18,22 +18,17 @@ void handleTextInput(CANService &canService);
 
 uint32_t readCanId();
 
+void initializeCanInterface(CANService &canService);
+
+void startCanReader(CANService &canService);
+
 int main() {
   try {
     CANService canService;
-    canService.initialize("vcan0");
-    std::cout << "CAN reader started" << std::endl;
+    initializeCanInterface(canService);
 
     std::thread userInputThread(readUserInput, std::ref(canService));
-    while (true) {
-      try {
-        struct can_frame currentFrame = canService.readFrame();
-        printFrame(currentFrame);
-      } catch (const std::exception &e) {
-        std::cerr << "Error reading frame: " << e.what() << std::endl;
-      }
-      std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    }
+    startCanReader(canService);
 
     userInputThread.join();
     return 0;
@@ -43,9 +38,40 @@ int main() {
   }
 }
 
+void initializeCanInterface(CANService &canService) {
+  std::string interfaceName;
+
+  while (true) {
+    std::cout << "Enter CAN interface name, or 'q' to quit: ";
+    if (!std::getline(std::cin, interfaceName) || interfaceName == "q" || interfaceName == "Q") {
+      exit(0);
+    }
+
+    try {
+      canService.initialize(interfaceName);
+      std::cout << "CAN reader started on interface " << interfaceName << std::endl;
+      break;
+    } catch (const std::exception &e) {
+      std::cerr << "Error initializing CAN interface: " << e.what() << std::endl;
+    }
+  }
+}
+
+void startCanReader(CANService &canService) {
+  while (true) {
+    try {
+      struct can_frame currentFrame = canService.readFrame();
+      printFrame(currentFrame);
+    } catch (const std::exception &e) {
+      std::cerr << "Error reading frame: " << e.what() << std::endl;
+    }
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  }
+}
+
 std::string stringToHex(const std::string &input) {
   std::ostringstream hexStream;
-  for (unsigned char c: input) {
+  for (unsigned char c : input) {
     hexStream << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(c) << " ";
   }
   return hexStream.str();
@@ -152,12 +178,12 @@ uint32_t readCanId() {
       if (std::cin.eof()) {
         exit(0);
       } else {
-        std::cin.clear(); // clear the error flag
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // discard invalid input
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         std::cerr << "Invalid CAN ID. Please enter a valid hexadecimal value." << std::endl;
       }
     } else {
-      std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // discard any extra input
+      std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
       return id;
     }
   }
